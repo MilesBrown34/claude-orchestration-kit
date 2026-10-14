@@ -175,10 +175,14 @@ def live(extras):
     return [e for e in extras if e.get("status") != "Merged"]
 
 
+def in_kit(extras):
+    return [e for e in extras if e.get("status") in ("Only mine", "Sent", "Changes asked")]
+
+
 def cmd_header():
     fetch()
     extras, _ = read_page()
-    n = len(live(extras))
+    n = len(in_kit(extras))
     line = "Orca-kit %s + %d extra%s" % (version(base()), n, "" if n == 1 else "s")
     ahead = int(git("rev-list", "--count", "miles.." + UP) or 0)
     if ahead:
@@ -202,7 +206,7 @@ def cmd_news():
     b = base()
     ahead = git("rev-list", "--count", "miles.." + UP)
     print("Installed: Orca-kit %s + %d extras.  His latest: %s (%s new commit%s)." %
-          (version(b), len(live(extras)), version(UP), ahead, "" if ahead == "1" else "s"))
+          (version(b), len(in_kit(extras)), version(UP), ahead, "" if ahead == "1" else "s"))
     if ahead != "0":
         heads = [l[1:].strip() for l in git("diff", b, UP, "--", "CHANGELOG.md").splitlines()
                  if l.startswith("+## ") or l.startswith("+- **")]

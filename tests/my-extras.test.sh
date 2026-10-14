@@ -48,6 +48,9 @@ out="$("$X" refresh)"; has "page: table row" "| Tabs | tab colors | Only mine | 
 has "page: PR number shown" "| Dots | project dots | Sent | #7 |" "$(cat "$K/MY-EXTRAS.md")"
 has "page: details kept" "### dots" "$(cat "$K/MY-EXTRAS.md")"; has "page: files from git" "files (from git): hud.ts" "$(cat "$K/MY-EXTRAS.md")"
 out="$("$X" header)"; has "header: refresh keeps the extras" "+ 2 extras" "$out"
+sed -i 's/^- status: Only mine$/- status: Building/' "$K/MY-EXTRAS.md"
+out="$("$X" header)"; has "header: an extra still being built is not counted" "+ 1 extra" "$out"
+sed -i 's/^- status: Building$/- status: Only mine/' "$K/MY-EXTRAS.md"
 
 # --- a stray edit straight on miles is caught; a tracking-only commit is not
 echo "stray" >> "$K/hud.ts"; q commit -am "quick fix on miles"
