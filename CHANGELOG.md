@@ -16,6 +16,7 @@ Newest first.
 - **New: your own start word.** `kit-init` asks once per machine for a word (e.g. `go`); typing it in any terminal lists your projects and the installed kit's version, starts a project's team or one Claude chat, or sets the kit up on a project that lacks it. `scripts/kit-word.sh install|remove|show` manages it (one marked block in `~/.bashrc` / `~/.zshrc`); `scripts/kit-launch.sh` is the picker. Optional `before_start=`, `header_cmd=`, `news_cmd=`, `chat_args=` and `update_cmd=` (adds `[u] update the kit` to the menu; its exit 2 means nothing to update and keeps the menu open) in `~/.orchestration-kit/launcher.conf`. Tests: `tests/kit-launch.test.sh`.
 
 - **New, status HUD: session state at a glance.** A busy session's mark turns clockwise (▘ ▝ ▗ ▖, one step per half second; the HUD redraws between refreshes only while some session is busy), and the band's key line explains the marks: `▘ busy  $ shell  ○ idle`. Tests: `tests/layout.test.ts`, `tests/e2e.test.ts`.
+- **New, status HUD: model badges.** Each session row shows its model right after the name: `OPS` (Opus, yellow), `SNT` (Sonnet, blue), `HKU` (Haiku, green), `GEM` (Gemini, purple), else the id's first three letters in gray. It gives way first on a row narrower than 30 columns. Tests: `tests/layout.test.ts`.
 
 ## 0.9.0 — 2026-10-14
 

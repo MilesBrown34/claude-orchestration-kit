@@ -129,7 +129,7 @@ Every drawn item has an id for `hideItems`. Unknown ids are ignored. The setup p
 | Area | Ids |
 |---|---|
 | Host | `host-title`, `cpu`, `history`, `ram`, `win`, `gpu`, `vram`, `disk`, `disk2` |
-| Sessions | `sessions-title`, `context-key`, `dot-key`, `dot`, `bar`, `tokens`, `state`, `activity`, `column2`, `frame-title` |
+| Sessions | `sessions-title`, `context-key`, `state-key`, `dot-key`, `dot`, `model`, `bar`, `tokens`, `state`, `activity`, `column2`, `frame-title` |
 | Chips | `work-mode`, `count`, `warnings` |
 
 `dot-key` is the project key (project mode only); `disk2` is any disk after the first; `column2` is the band's second column of session rows (off: one column and `+N more`); `warnings` is every alert chip.

@@ -145,6 +145,15 @@ export function meters(v: View, max: number): Meter[] {
   return out
 }
 
+/** Model badge: OPS opus (yellow), SNT sonnet (blue), HKU haiku (green), GEM gemini (purple), else the id's first three letters (gray). */
+export function modelBadge(model: string): [string, Col] {
+  const m = model.toLowerCase()
+  const map: Record<string, [string, Col]> = { opus: ['OPS', C.amber], sonnet: ['SNT', C.cyan], haiku: ['HKU', C.green], gemini: ['GEM', C.purple] }
+  for (const f of Object.keys(map)) if (m.includes(f)) return map[f] as [string, Col]
+  const first = m.replace(/^claude-/, '').split(/[-[ ]/)[0] ?? ''
+  return [first.slice(0, 3).toUpperCase().padEnd(3), C.steel]
+}
+
 /** A busy session's mark turns clockwise through the four corners (▘ ▝ ▗ ▖), one step per half second. */
 export const spin = (now: number): string => '▘▝▗▖'.charAt(Math.floor(now / 500) % 4)
 
@@ -171,6 +180,11 @@ export function sessionRow(v: View, h: Heartbeat, w: number, selected = false): 
   }
   s.put(x, 0, pad(trunc(h.name, 7), 7), flashing ? C.white : h.state === 'idle' ? C.dim : C.tx, bg, true)
   x += 8
+  if (on('model') && w >= 30) {
+    const [b, c] = modelBadge(h.model)
+    s.put(x, 0, b, flashing ? C.white : c, bg, true)
+    x += 4
+  }
   if (on('bar') && w >= 24) {
     const mark = Math.round((v.cfg.reportMark / h.window) * 8)
     bar(s, x, 0, 8, h.tokens / h.window, fg, mark)
