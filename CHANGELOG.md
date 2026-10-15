@@ -5,6 +5,7 @@ Newest first.
 ## Unreleased
 
 - **New: your own start word.** `kit-init` asks once per machine for a word (e.g. `go`); typing it in any terminal lists your projects and the installed kit's version, starts a project's team or one Claude chat, or sets the kit up on a project that lacks it. `scripts/kit-word.sh install|remove|show` manages it (one marked block in `~/.bashrc` / `~/.zshrc`); `scripts/kit-launch.sh` is the picker. Optional `before_start=`, `header_cmd=`, `news_cmd=` and `chat_args=` in `~/.orchestration-kit/launcher.conf`. Tests: `tests/kit-launch.test.sh`.
+- **New: permission mode `bypass-available`.** `start-team.sh --mode bypass-available` (or `permission_mode: bypass-available` in the team block) starts every session with `--allow-dangerously-skip-permissions`: sessions start like `normal`, and Shift+Tab can then switch one into bypass mode (no permission checks) when you choose it. Recycles keep it. kit-init offers it as a fourth answer.
 
 ## 0.9.0 — 2026-10-14
 
