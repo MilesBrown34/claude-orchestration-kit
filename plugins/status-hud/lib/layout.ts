@@ -145,6 +145,9 @@ export function meters(v: View, max: number): Meter[] {
   return out
 }
 
+/** A busy session's mark turns clockwise through the four corners (▘ ▝ ▗ ▖), one step per half second. */
+export const spin = (now: number): string => '▘▝▗▖'.charAt(Math.floor(now / 500) % 4)
+
 /** The row's dot: the Claude account (blue 1, purple 2) or, with `dotMode: project`, the session's project color. */
 export function dotColor(v: View, h: Heartbeat): Col {
   if (v.cfg.dotMode === 'project') return h.color || C.dim
@@ -160,7 +163,7 @@ export function sessionRow(v: View, h: Heartbeat, w: number, selected = false): 
   const bg = flashing ? C.rD : selected ? C.gray : null
   const fg = flashing ? C.white : LV[lv]
   for (let x = 0; x < w; x++) s.put(x, 0, ' ', C.tx, bg)
-  const st = h.state === 'busy' ? ['▘', C.green] : h.state === 'shell' ? ['$', C.orange] : ['○', C.dim]
+  const st = h.state === 'busy' ? [spin(v.now), C.green] : h.state === 'shell' ? ['$', C.orange] : ['○', C.dim]
   let x = 0
   if (on('dot')) {
     s.put(0, 0, '●', dotColor(v, h), bg)
@@ -247,6 +250,11 @@ export function drawBand(v: View, cols: number, maxRows: number): Line[] {
     for (const h of ss) if (h.project && !seen.has(h.project)) seen.set(h.project, h.color || C.dim)
     for (const [name, col] of seen) key('●', col, trunc(name, 14))
   }
+  if (on('state-key')) {
+    key('▘', C.green, 'busy')
+    key('$', C.orange, 'shell')
+    key('○', C.dim, 'idle')
+  }
   const cap = Math.max(0, area)
   const two = cap >= 126 && on('column2')
   const colW = two ? Math.floor((cap - 2) / 2) : cap
@@ -293,7 +301,7 @@ export function drawCompact(v: View, W: number): Line[] {
     const flashing = isFlashing(v.flash[h.id], v.now) && flashPhase(v.now)
     const bg = flashing ? C.rD : h.state === 'idle' ? C.gray : LVD[lv]
     const txt = ` ${trunc(h.name, 8)} ${kfmt(h.tokens)}${lv === 'red' ? '!' : ''} `
-    const g = h.state === 'busy' ? '▘' : h.state === 'shell' ? '$' : '○'
+    const g = h.state === 'busy' ? spin(v.now) : h.state === 'shell' ? '$' : '○'
     if (x + txt.length + 4 > W) break
     s.put(x, 1, ' ', C.tx, bg)
     s.put(x + 1, 1, shows(v.cfg, 'dot') ? '●' : ' ', dotColor(v, h), bg)

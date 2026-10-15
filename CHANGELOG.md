@@ -15,6 +15,8 @@ Newest first.
 - **New: kit update in one step.** `/orchestration-kit:kit-update` (or `scripts/kit-update.sh`) shows the installed and newest versions (`status --fetch`), updates the kit and the status HUD on your yes (`run`), warns that open sessions keep the old version until restarted, and lists projects whose copied session scripts are now older (`projects`); `refresh <project>` replaces them and keeps each old file as `.bak-<date>`. A kit installed from a local git folder that changed without a version bump shows as newer, and `run --reinstall` reinstalls it (Claude Code installs by version). Tests: `tests/kit-update.test.sh`.
 - **New: your own start word.** `kit-init` asks once per machine for a word (e.g. `go`); typing it in any terminal lists your projects and the installed kit's version, starts a project's team or one Claude chat, or sets the kit up on a project that lacks it. `scripts/kit-word.sh install|remove|show` manages it (one marked block in `~/.bashrc` / `~/.zshrc`); `scripts/kit-launch.sh` is the picker. Optional `before_start=`, `header_cmd=`, `news_cmd=`, `chat_args=` and `update_cmd=` (adds `[u] update the kit` to the menu; its exit 2 means nothing to update and keeps the menu open) in `~/.orchestration-kit/launcher.conf`. Tests: `tests/kit-launch.test.sh`.
 
+- **New, status HUD: session state at a glance.** A busy session's mark turns clockwise (▘ ▝ ▗ ▖, one step per half second; the HUD redraws between refreshes only while some session is busy), and the band's key line explains the marks: `▘ busy  $ shell  ○ idle`. Tests: `tests/layout.test.ts`, `tests/e2e.test.ts`.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.

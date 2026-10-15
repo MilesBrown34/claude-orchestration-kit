@@ -30,6 +30,8 @@ const S: {
   running: boolean
   lastFull: number
   hasFlash: boolean
+  /** Some session is busy: redraw each tick so its mark turns. */
+  anyBusy: boolean
   last: Snapshot | null
   /** The session directory (session.start's cwd): the chip's toggle script is looked up there. */
   cwd: string
@@ -45,6 +47,7 @@ const S: {
   running: false,
   lastFull: 0,
   hasFlash: false,
+  anyBusy: false,
   last: null,
   cwd: '',
   repo: '',
@@ -100,11 +103,12 @@ async function doTick($: Dollar): Promise<void> {
       await refreshColor(c, io, now)
       const snap = await tick(io, c, S.me, S.ts, exists, S.cwd)
       S.hasFlash = Object.keys(S.ts.flash).length > 0
+      S.anyBusy = snap.sessions.some(x => x.state === 'busy')
       S.last = snap
       await update($, snapA, () => snap)
       await update($, flashA, () => ({ ...S.ts.flash }))
-    } else if (S.hasFlash) {
-      // Between full refreshes only the clock moves, so a flash blinks without any disk or process work.
+    } else if (S.hasFlash || S.anyBusy) {
+      // Between full refreshes only the clock moves, so a flash blinks and a busy mark turns without any disk or process work.
       await update($, snapA, s => (s ? { ...s, now } : s))
     }
   } catch (err) {

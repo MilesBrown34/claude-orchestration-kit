@@ -272,3 +272,23 @@ test('project dots: no tab color and no tab-colors file: the project\'s own colo
   await w.clock.advance(61_000)
   expect(JSON.parse(w.files.get('/home/u/.claude-status-hud/sessions/sess-1234567.json') ?? '{}').color).toBe('#d35400')
 })
+
+test('a busy session\'s mark turns between full refreshes (redrawn every half second while busy)', async ($, on) => {
+  const turns: string[] = []
+  let w!: ReturnType<typeof world>
+  on('tool.call', async () => {
+    await w.clock.advance(3000)   // a full refresh sees this session busy
+    for (let i = 0; i < 4; i++) {
+      const band = await $.ui.mount({ plugin: 'status-hud', surface: 'terminal', component: 'AbovePrompt', props: BAND })
+      const t = JSON.stringify(await band.drawn())
+      turns.push(['▝', '▗', '▖'].filter(m => t.includes(m)).join(''))   // ▘ is also in the key, so count the other three
+      await w.clock.advance(500)
+    }
+    return { result: { content: 'ok' } } as never
+  })
+  w = world(on)
+  await $.session.start(START)
+  await w.clock.advance(500)
+  await $.tool.call({ tool: 'Read', description: 'Read a file' } as never)
+  expect(new Set(turns).size).toBeGreaterThan(1)
+})
