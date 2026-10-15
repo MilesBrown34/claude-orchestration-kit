@@ -4,7 +4,7 @@ Newest first.
 
 ## Unreleased
 
-- **New, lessons 61–65 (`docs/LESSONS.md`, "Guards, gate logs and worktree git").** A state-scanning guard runs before the step that erases what it scans; a measuring guard draws its landmarks on the output; the gate log's SHA line is written after the throttle slot; every git write in a multi-worktree session names its tree with `git -C`; path/name filters are falsified with `..`, absolute and case variants, one guard layer at a time.
+- **New, lessons 61–67 (`docs/LESSONS.md`, "Guards, gate logs and worktree git").** A state-scanning guard runs before the step that erases what it scans; a measuring guard draws its landmarks on the output; the gate log's SHA line is written after the throttle slot; every git write in a multi-worktree session names its tree with `git -C`; path/name filters are falsified with `..`, absolute and case variants, one guard layer at a time; a check never reads through a clamped accessor; a probe number that feeds a human ruling is reproduced by a second path first.
 
 ## 0.9.0 — 2026-10-14
 
