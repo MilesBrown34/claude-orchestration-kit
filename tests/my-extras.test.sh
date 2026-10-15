@@ -64,6 +64,7 @@ out="$("$X" check)"; rc_is "check: tracking-only commit is fine" 0 $?
 ver "$H" 1.1; echo "his launcher change" >> "$H/scripts/launch.sh"; printf '# Changelog\n\n## 1.1\n- **New: faster launch.**\n\n## 1.0\n' > "$H/CHANGELOG.md"
 git -C "$H" commit -qam "1.1"; q fetch -q upstream
 out="$("$X" header)"; has "header: newer version marked" "▲ 1.1 available" "$out"; has "header: still on 1.0" "Orca-kit 1.0" "$out"
+has "header: update in yellow" "$(printf '\033[1;33m▲')" "$out"; hasnt "header: NO_COLOR is plain" "$(printf '\033[')" "$(NO_COLOR=1 "$X" header)"
 out="$("$X" news)"; has "news: versions" "His latest: 1.1" "$out"; has "news: changelog heading" "New: faster launch." "$out"
 has "news: overlapping extra needs refit" "Tabs needs a refit (he changed scripts/launch.sh)" "$out"; has "news: other extra fine" "Dots: not affected" "$out"
 out="$("$X" status)"; has "status: refit flag" "Only mine, needs refit" "$out"

@@ -179,6 +179,11 @@ def in_kit(extras):
     return [e for e in extras if e.get("status") in ("Only mine", "Sent", "Changes asked")]
 
 
+def warn(text):
+    """Bold yellow, so a waiting update stands out in the menu; plain when NO_COLOR is set."""
+    return text if os.environ.get("NO_COLOR") else "\033[1;33m%s\033[0m" % text
+
+
 def cmd_header():
     fetch()
     extras, _ = read_page()
@@ -188,10 +193,10 @@ def cmd_header():
     if ahead:
         nv = version(UP)
         what = nv + " available" if nv != version(base()) else "new changes"
-        line += "   ▲ %s (news)" % what
+        line += "   " + warn("▲ %s (news)" % what)
     stray = stray_commits()
     if stray:
-        line += "   ⚠ %d unlisted change%s" % (len(stray), "" if len(stray) == 1 else "s")
+        line += "   " + warn("⚠ %d unlisted change%s" % (len(stray), "" if len(stray) == 1 else "s"))
     print(line)
     sys.stdout.flush()
     if stamp_old("my-extras-refresh") and not NO_NET:
