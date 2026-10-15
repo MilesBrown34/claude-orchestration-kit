@@ -37,6 +37,7 @@ cat > "$K/MY-EXTRAS.md" <<'EOF'
 - status: Sent
 - pr: 7
 - what: project dots
+- merge notes: keep the old key row
 ## Given to his kit
 EOF
 
@@ -46,7 +47,7 @@ out="$("$X" check)"; rc_is "check: clean miles passes" 0 $?
 has "files: from the branch" "scripts/launch.sh" "$("$X" files tabs)"
 out="$("$X" refresh)"; has "page: table row" "| Tabs | tab colors | Only mine | — |" "$(cat "$K/MY-EXTRAS.md")"
 has "page: PR number shown" "| Dots | project dots | Sent | #7 |" "$(cat "$K/MY-EXTRAS.md")"
-has "page: details kept" "### dots" "$(cat "$K/MY-EXTRAS.md")"; has "page: files from git" "files (from git): hud.ts" "$(cat "$K/MY-EXTRAS.md")"
+has "page: details kept" "### dots" "$(cat "$K/MY-EXTRAS.md")"; has "page: merge notes kept" "- merge notes: keep the old key row" "$(cat "$K/MY-EXTRAS.md")"; has "page: files from git" "files (from git): hud.ts" "$(cat "$K/MY-EXTRAS.md")"
 out="$("$X" header)"; has "header: refresh keeps the extras" "+ 2 extras" "$out"
 sed -i 's/^- status: Only mine$/- status: Building/' "$K/MY-EXTRAS.md"
 out="$("$X" header)"; has "header: an extra still being built is not counted" "+ 1 extra" "$out"

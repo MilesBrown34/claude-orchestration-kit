@@ -89,7 +89,7 @@ def read_page():
             cur = {"id": line[4:].strip()}
             extras.append(cur)
             continue
-        m = re.match(r"^- (\w+):\s*(.*)$", line)
+        m = re.match(r"^- ([A-Za-z][\w ]*):\s*(.*)$", line)  # "files (from git)" is rebuilt, so never read
         if cur is not None and m:
             cur[m.group(1)] = m.group(2).strip()
         elif section.startswith("given to his kit") and line.startswith("- "):
@@ -165,6 +165,9 @@ def render(extras, history, changed):
         for k in ("name", "status", "pr", "what"):
             lines.append("- %s: %s" % (k, e.get(k, "")))
         lines.append("- files (from git): " + (" ".join(extra_files(e["id"])) or "(branch missing)"))
+        for k, v in e.items():  # any other line (e.g. merge notes) is kept as written
+            if k not in ("id", "name", "status", "pr", "what"):
+                lines.append("- %s: %s" % (k, v))
         lines.append("")
     lines += ["## Given to his kit", ""] + (["- " + h for h in history] or ["(none yet)"]) + [""]
     with open(PAGE, "w", encoding="utf-8") as f:
