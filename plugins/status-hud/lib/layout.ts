@@ -127,7 +127,7 @@ export function sessionRow(v: View, h: Heartbeat, w: number, selected = false): 
   const bg = flashing ? C.rD : selected ? C.gray : null
   const fg = flashing ? C.white : LV[lv]
   for (let x = 0; x < w; x++) s.put(x, 0, ' ', C.tx, bg)
-  const st = h.state === 'busy' ? ['▘', C.green] : h.state === 'shell' ? ['$', C.orange] : ['○', C.dim]
+  const st = h.state === 'busy' ? ['▘', C.green] : h.state === 'shell' ? ['$', C.orange] : h.state === 'bg' ? ['◔', C.cyan] : ['○', C.dim]
   s.put(0, 0, '●', h.account === 2 ? C.purple : C.blue, bg)
   s.put(2, 0, pad(trunc(h.name, 7), 7), flashing ? C.white : h.state === 'idle' ? C.dim : C.tx, bg, true)
   let x = 10
@@ -235,7 +235,7 @@ export function drawCompact(v: View, W: number): Line[] {
     const flashing = isFlashing(v.flash[h.id], v.now) && flashPhase(v.now)
     const bg = flashing ? C.rD : h.state === 'idle' ? C.gray : LVD[lv]
     const txt = ` ${trunc(h.name, 8)} ${kfmt(h.tokens)}${lv === 'red' ? '!' : ''} `
-    const g = h.state === 'busy' ? '▘' : h.state === 'shell' ? '$' : '○'
+    const g = h.state === 'busy' ? '▘' : h.state === 'shell' ? '$' : h.state === 'bg' ? '◔' : '○'
     if (x + txt.length + 4 > W) break
     s.put(x, 1, ' ', C.tx, bg)
     s.put(x + 1, 1, '●', h.account === 2 ? C.purple : C.blue, bg)

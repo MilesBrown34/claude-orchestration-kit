@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **New, status HUD: background state.** A session whose turn ended while background work it started is still running (a background shell, subagent, monitor or workflow, as the engine lists them at the turn's Stop) shows `◔` in cyan instead of `○` idle, with `bg: <first job's description> +N` as its activity (never the command); the next turn that stops with nothing in flight returns it to `○`. A subagent's turn ending no longer marks the main session idle mid-turn. Tests: `plugins/status-hud/tests/e2e.test.ts`.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
