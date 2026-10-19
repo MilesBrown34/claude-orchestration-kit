@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing'
 
 import { parseConfig } from '../lib/config'
-import { chips, drawBand, drawPane, lineText, sessionRow, type Line, type View } from '../lib/layout'
+import { activityText, chips, drawBand, drawPane, lineText, sessionRow, type Line, type View } from '../lib/layout'
 import type { Heartbeat, Snapshot } from '../types'
 
 const S = (name: string, k: number, state: Heartbeat['state'] = 'busy', account = 1): Heartbeat => ({ id: name, name, model: 'opus', account, tokens: k * 1000, window: 1_000_000, state, activity: 'doing a long thing that should truncate rather than wrap', at: 0 })
@@ -186,4 +186,13 @@ test('alerts sit at the right of the chip line, most urgent first; information s
   const alertRow = pane.findIndex(l => l.includes('Windows commit'))
   expect(alertRow).toBeGreaterThan(infoRow)
   expect(pane[alertRow]).not.toContain('sessions ')
+})
+
+test('a ◔ row names the tracked programs its background work runs; other states and no programs leave the activity alone', () => {
+  const bg = { ...S('Pan', 100, 'bg'), activity: 'bg: Run the checks', apps: ['godot', 'blender', 'godot'] }
+  expect(activityText(bg)).toBe('bg: Run the checks · godot ×2, blender')
+  expect(sessionRow(view(), bg, 120).runs(0).map(r => r.text).join('')).toContain('bg: Run the checks · godot ×2, blender')
+  expect(activityText({ ...bg, apps: [] })).toBe('bg: Run the checks')
+  expect(activityText({ ...bg, apps: undefined })).toBe('bg: Run the checks')
+  expect(activityText({ ...bg, state: 'shell', activity: 'Bash: Run the checks' })).toBe('Bash: Run the checks')
 })
