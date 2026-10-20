@@ -26,6 +26,7 @@ Newest first.
 - **New, status HUD: background state.** A session whose turn ended while background work it started is still running (a background shell, subagent, monitor or workflow, as the engine lists them at the turn's Stop) shows `◔` in cyan instead of `○` idle, with `bg: <first job's description> +N` as its activity (never the command); the next turn that stops with nothing in flight returns it to `○`. A subagent's turn ending no longer marks the main session idle mid-turn. Tests: `plugins/status-hud/tests/e2e.test.ts`.
 - **New, status HUD: programs on a background row.** A `◔` row's activity ends with the tracked programs that session's background work is running (`bg: Run the checks · godot ×2`), so the row says what it is waiting on. Tests: `plugins/status-hud/tests/layout.test.ts`.
 - **New, status HUD: CPU temperature.** With a reading, the CPU line shows the load and the CPU's temperature (`5.1 72°C`, the thread count stays in the HOST title); without one it keeps `5.1/16t`. `cpuTempCmd` (every `cpuTempSeconds`, default 15) reads Linux's own sensor (coretemp, k10temp) and, on WSL, which has none, LibreHardwareMonitor's readings on Windows (CPU Package, else Tctl/Tdie, else Core Max). A failed read keeps the last value for two spans. Tests: `plugins/status-hud/tests/host.test.ts`, `tests/layout.test.ts`.
+- **Changed, status HUD: the pane's icon is a koi** (white with red patches) instead of the horned helmet; same size and place.
 
 ## 0.9.0 — 2026-10-14
 
