@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **Changed, status HUD: the pane's icon is a koi** (white with red patches) instead of the horned helmet; same size and place.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
