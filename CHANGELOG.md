@@ -2,6 +2,11 @@
 
 Newest first.
 
+## Unreleased
+
+- **New: skill checks.** `tests/skills-lint.test.sh` (part of `tests/run.sh`) refuses a skill or agent whose frontmatter `name` is not its folder, whose `description` is missing or over 1024 characters, that cites a `${CLAUDE_PLUGIN_ROOT}/` path, a markdown link or a file "in this skill's folder" that does not exist, or that carries a personal home path; with `KIT_PRIVATE_WORDS=<file>` it also refuses any word on that list.
+- **New: `scripts/skill-usage.py <session log folder> [--days N]`** counts which kit skills a project's sessions actually ran (slash command or Skill tool) and lists the ones never run.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
