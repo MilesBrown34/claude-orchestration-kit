@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **Changed: a lighter seat skill.** `orchestrate`'s deploy, log and recycle/handover steps moved to `deploy-and-log.md` and `recycle-and-handover.md` beside its SKILL.md; the seat reads them only before a deploy, a log entry, a recycle or a handover. Every seat start loads about 850 tokens less; the pinned rules stay in SKILL.md.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
