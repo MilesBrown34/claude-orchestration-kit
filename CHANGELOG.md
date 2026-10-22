@@ -27,6 +27,7 @@ Newest first.
 - **New, status HUD: programs on a background row.** A `◔` row's activity ends with the tracked programs that session's background work is running (`bg: Run the checks · godot ×2`), so the row says what it is waiting on. Tests: `plugins/status-hud/tests/layout.test.ts`.
 - **New, status HUD: CPU temperature.** With a reading, the CPU line shows the load and the CPU's temperature (`5.1 72°C`, the thread count stays in the HOST title); without one it keeps `5.1/16t`. `cpuTempCmd` (every `cpuTempSeconds`, default 15) reads Linux's own sensor (coretemp, k10temp) and, on WSL, which has none, LibreHardwareMonitor's readings on Windows (CPU Package, else Tctl/Tdie, else Core Max). A failed read keeps the last value for two spans. Tests: `plugins/status-hud/tests/host.test.ts`, `tests/layout.test.ts`.
 - **Changed, status HUD: the pane's icon is a koi** (white with red patches) instead of the horned helmet; same size and place.
+- **Changed: a lighter seat skill.** `orchestrate`'s deploy, log and recycle/handover steps moved to `deploy-and-log.md` and `recycle-and-handover.md` beside its SKILL.md; the seat reads them only before a deploy, a log entry, a recycle or a handover. Every seat start loads about 850 tokens less; the pinned rules stay in SKILL.md.
 
 ## 0.9.0 — 2026-10-14
 
