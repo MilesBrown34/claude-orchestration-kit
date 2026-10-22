@@ -28,6 +28,8 @@ Newest first.
 - **New, status HUD: CPU temperature.** With a reading, the CPU line shows the load and the CPU's temperature (`5.1 72°C`, the thread count stays in the HOST title); without one it keeps `5.1/16t`. `cpuTempCmd` (every `cpuTempSeconds`, default 15) reads Linux's own sensor (coretemp, k10temp) and, on WSL, which has none, LibreHardwareMonitor's readings on Windows (CPU Package, else Tctl/Tdie, else Core Max). A failed read keeps the last value for two spans. Tests: `plugins/status-hud/tests/host.test.ts`, `tests/layout.test.ts`.
 - **Changed, status HUD: the pane's icon is a koi** (white with red patches) instead of the horned helmet; same size and place.
 - **Changed: a lighter seat skill.** `orchestrate`'s deploy, log and recycle/handover steps moved to `deploy-and-log.md` and `recycle-and-handover.md` beside its SKILL.md; the seat reads them only before a deploy, a log entry, a recycle or a handover. Every seat start loads about 850 tokens less; the pinned rules stay in SKILL.md.
+- **New: skill checks.** `tests/skills-lint.test.sh` (part of `tests/run.sh`) refuses a skill or agent whose frontmatter `name` is not its folder, whose `description` is missing or over 1024 characters, that cites a `${CLAUDE_PLUGIN_ROOT}/` path, a markdown link or a file "in this skill's folder" that does not exist, or that carries a personal home path; with `KIT_PRIVATE_WORDS=<file>` it also refuses any word on that list.
+- **New: `scripts/skill-usage.py <session log folder> [--days N]`** counts which kit skills a project's sessions actually ran (slash command or Skill tool) and lists the ones never run.
 
 ## 0.9.0 — 2026-10-14
 
