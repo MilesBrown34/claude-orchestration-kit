@@ -1,20 +1,26 @@
 #!/usr/bin/env python3
-"""my-extras — keep track of Miles's extras on top of Artekka's kit (branch `miles` only, never sent).
+"""my-extras — keep track of PRS's extras on top of Artekka's kit (branch `prs` only, never sent).
 
 The kit folder holds Artekka's kit (remote `upstream`) plus extras. Each extra is a branch
-`extra/<id>` that starts from upstream/main and adds one feature or fix; `miles` is upstream plus the
+`extra/<id>` that starts from upstream/main and adds one feature or fix; `prs` is upstream plus the
 merged extras plus this folder (my-extras/), and is the installed plugin. MY-EXTRAS.md (not in git)
 lists the extras; this script keeps its table true.
 
 Usage: my-extras <command>
   header   one line for the start word's menu: kit version, extras, ▲ when upstream has news,
-           ⚠ when miles holds a change no extra owns. Fetches upstream at most once a day (2 s limit).
-  news     what upstream changed since miles was built, and which extras need a refit
+           ⚠ when prs holds a change no extra owns. Fetches upstream at most once a day (2 s limit).
+  news     what upstream changed since prs was built, and which extras need a refit
   status   the table, with live refit flags
-  check    exit 1 (and list them) when miles has commits that belong to no extra
+  check    exit 1 (and list them) when prs has commits that belong to no extra
   refresh  fetch upstream and pull-request states now, and rewrite MY-EXTRAS.md's table
   files <id>   the files extra <id> changes
+  release [--dry-run]   package prs as the official version a visitor downloads: refuses while upstream has
+           new commits (update first), the tree is dirty, prs holds an unlisted change, or the gate
+           (MY_EXTRAS_GATE, default `bash tests/run.sh`) is red; then tags prs v<kit>-r<n>, pushes prs,
+           overwrites the fork's official branch (MY_EXTRAS_OFFICIAL, default main, with --force-with-lease)
+           and pushes the tag. The header shows ⚑ release due while the newest tag is not at prs.
 Env: MY_EXTRAS_REPO (default: this script's repo), MY_EXTRAS_UPSTREAM (default upstream/main),
+     MY_EXTRAS_ORIGIN (default origin: the fork), MY_EXTRAS_OFFICIAL (default main),
      MY_EXTRAS_NO_NET=1 (never fetch or call gh; tests), MY_EXTRAS_GH_REPO (default Artekka/claude-orchestration-kit).
 """
 import json, os, re, subprocess, sys, time
@@ -24,6 +30,9 @@ REPO = os.environ.get("MY_EXTRAS_REPO") or os.path.dirname(HERE)
 UP = os.environ.get("MY_EXTRAS_UPSTREAM", "upstream/main")
 NO_NET = os.environ.get("MY_EXTRAS_NO_NET") == "1"
 GH_REPO = os.environ.get("MY_EXTRAS_GH_REPO", "Artekka/claude-orchestration-kit")
+ORIGIN = os.environ.get("MY_EXTRAS_ORIGIN", "origin")
+OFFICIAL = os.environ.get("MY_EXTRAS_OFFICIAL", "main")
+GATE = os.environ.get("MY_EXTRAS_GATE", "bash tests/run.sh")
 PAGE = os.path.join(REPO, "MY-EXTRAS.md")
 TRACKING = ("my-extras/", "tests/my-extras.test.sh")   # this tool's own files: never an extra, never sent
 STATUSES = ("Building", "Only mine", "Sent", "Changes asked", "Merged", "Turned down")
@@ -70,7 +79,7 @@ def version(ref):
 
 
 def base():
-    return git("merge-base", "miles", UP)
+    return git("merge-base", "prs", UP)
 
 
 # ---- MY-EXTRAS.md: one "### <id>" block per extra with "- key: value" lines
@@ -113,17 +122,97 @@ def needs_refit(eid, changed=None):
     return sorted(set(extra_files(eid)) & changed)
 
 
+def patch_id(sha):
+    """The change itself, independent of its commit id (an amended or rebased copy has the same one)."""
+    patch = subprocess.run(["git", "-C", REPO, "show", "--format=", sha], capture_output=True, text=True).stdout
+    out = subprocess.run(["git", "-C", REPO, "patch-id", "--stable"], input=patch, capture_output=True, text=True).stdout
+    return out.split()[0] if out.split() else None
+
+
+def extra_patch_ids():
+    ids = set()
+    for br in git("for-each-ref", "--format=%(refname:short)", "refs/heads/extra/").splitlines():
+        for sha in git("rev-list", "--no-merges", UP + ".." + br).splitlines():
+            ids.add(patch_id(sha))
+    return ids
+
+
 def stray_commits():
-    """miles commits since the base that no extra branch holds and that touch more than this tool."""
-    out = []
-    for sha in git("rev-list", "--no-merges", base() + "..miles").splitlines():
+    """prs commits since the base that no extra branch holds (by id, else by the change itself:
+    an extra amended after its merge is the same change) and that touch more than this tool."""
+    out, ids = [], None
+    for sha in git("rev-list", "--no-merges", base() + "..prs").splitlines():
         if git("branch", "--list", "extra/*", "--contains", sha):
             continue
         files = [f for f in git("show", "--name-only", "--format=", sha).splitlines() if f]
         if files and all(f.startswith(TRACKING) for f in files):
             continue
+        ids = extra_patch_ids() if ids is None else ids
+        if patch_id(sha) in ids:
+            continue
         out.append(sha[:7] + " " + git("show", "-s", "--format=%s", sha))
     return out
+
+
+def release_tags():
+    return git("tag", "-l", "v*-r*", "--sort=-v:refname").splitlines()
+
+
+def release_due():
+    """True until the newest release tag sits exactly at prs."""
+    tags = release_tags()
+    return (not tags) or git("rev-parse", tags[0] + "^{commit}") != git("rev-parse", "prs")
+
+
+def next_release_tag():
+    v = version("prs")
+    n = 0
+    for t in release_tags():
+        m = re.match(r"^v(.+)-r(\d+)$", t)
+        if m and m.group(1) == v:
+            n = max(n, int(m.group(2)))
+    return "v%s-r%d" % (v, n + 1)
+
+
+def cmd_release(dry):
+    if not NO_NET:
+        for remote in (UP.split("/")[0], ORIGIN):
+            r = subprocess.run(["timeout", "20", "git", "-C", REPO, "fetch", "-q", "--tags", remote], capture_output=True, text=True)
+            if r.returncode != 0:
+                raise SystemExit("release: cannot fetch %s (%s): no release without a fresh look at it" % (remote, r.stderr.strip()[:120]))
+    ahead = int(git("rev-list", "--count", "prs.." + UP) or 0)
+    if ahead:
+        raise SystemExit("release refused: Artekka has %d new commit%s your kit lacks. Run the update first (ask Claude \"update the kit\")." % (ahead, "" if ahead == 1 else "s"))
+    if git("status", "--porcelain", "--untracked-files=no"):
+        raise SystemExit("release refused: the kit folder has uncommitted changes. Commit or drop them first.")
+    stray = stray_commits()
+    if stray:
+        raise SystemExit("release refused: prs holds changes that belong to no extra:\n  " + "\n  ".join(stray))
+    tag = next_release_tag()
+    sha = git("rev-parse", "--short", "prs")
+    old = git("rev-parse", "--verify", "-q", "%s/%s" % (ORIGIN, OFFICIAL), check=False)
+    plan = ["tag prs (%s) as %s" % (sha, tag),
+            "push prs to %s" % ORIGIN,
+            "overwrite %s/%s with prs (force-with-lease; it held %s)" % (ORIGIN, OFFICIAL, old[:7] if old else "nothing"),
+            "push the tag %s" % tag]
+    if dry:
+        print("release (dry run) would, after a green gate `%s`:" % GATE)
+        for p in plan:
+            print("  " + p)
+        return
+    print("gate: " + GATE)
+    r = subprocess.run(GATE, shell=True, cwd=REPO, capture_output=True, text=True)
+    if r.returncode != 0:
+        tail = "\n".join((r.stdout + r.stderr).splitlines()[-12:])
+        raise SystemExit("release refused: the gate is red (exit %d). Last lines:\n%s" % (r.returncode, tail))
+    git("tag", "-a", tag, "prs", "-m", "Official %s: Artekka's kit %s plus the extras listed in MY-EXTRAS.md" % (tag, version("prs")))
+    git("push", ORIGIN, "prs")
+    lease = "--force-with-lease=%s:%s" % (OFFICIAL, old) if old else "--force-with-lease"
+    git("push", lease, ORIGIN, "prs:refs/heads/" + OFFICIAL)
+    git("push", ORIGIN, "refs/tags/" + tag)
+    for p in plan:
+        print("  done: " + p)
+    print("released %s: %s/%s is now prs at %s." % (tag, ORIGIN, OFFICIAL, sha))
 
 
 def gh_state(pr):
@@ -198,7 +287,7 @@ def cmd_header():
     n = len(in_kit(extras))
     mine = version(base())
     line = "Orca-kit %s + %d extra%s   /   " % (mine, n, "" if n == 1 else "s")
-    ahead = int(git("rev-list", "--count", "miles.." + UP) or 0)
+    ahead = int(git("rev-list", "--count", "prs.." + UP) or 0)
     if ahead:
         nv = version(UP)
         line += warn("▲ current %s (news)" % nv if nv != mine else "▲ current %s + new changes (news)" % nv)
@@ -207,6 +296,8 @@ def cmd_header():
     stray = stray_commits()
     if stray:
         line += "   " + warn("⚠ %d unlisted change%s" % (len(stray), "" if len(stray) == 1 else "s"))
+    if release_due():
+        line += "   " + warn("⚑ release due" if release_tags() else "⚑ never released")
     print(line)
     sys.stdout.flush()
     if stamp_old("my-extras-refresh") and not NO_NET:
@@ -219,7 +310,7 @@ def cmd_news():
     fetch()
     extras, _ = read_page()
     b = base()
-    ahead = git("rev-list", "--count", "miles.." + UP)
+    ahead = git("rev-list", "--count", "prs.." + UP)
     print("Installed: Orca-kit %s + %d extras.  His latest: %s (%s new commit%s)." %
           (version(b), len(in_kit(extras)), version(UP), ahead, "" if ahead == "1" else "s"))
     if ahead != "0":
@@ -242,9 +333,16 @@ def cmd_news():
         print("Nothing new from him.")
     stray = stray_commits()
     if stray:
-        print("⚠ Changes on miles that belong to no extra:")
+        print("⚠ Changes on prs that belong to no extra:")
         for s in stray:
             print("  " + s)
+    tags = release_tags()
+    if not tags:
+        print("Official version: none yet (my-extras/my-extras release).")
+    elif release_due():
+        print("Official version: %s, behind prs (my-extras/my-extras release when ready)." % tags[0])
+    else:
+        print("Official version: %s = prs." % tags[0])
 
 
 def cmd_status():
@@ -297,6 +395,8 @@ def main():
         print("MY-EXTRAS.md refreshed")
     elif cmd == "files" and len(sys.argv) > 2:
         print("\n".join(extra_files(sys.argv[2])))
+    elif cmd == "release":
+        cmd_release("--dry-run" in sys.argv[2:])
     else:
         print(__doc__.strip(), file=sys.stderr)
         sys.exit(64)

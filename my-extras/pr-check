@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# pr-check — run before ANY extra is sent to Artekka as a pull request (branch `miles` only, never sent).
+# pr-check — run before ANY extra is sent to Artekka as a pull request (branch `prs` only, never sent).
 #
 # Usage: my-extras/pr-check <id>      checks branch extra/<id>; exit 0 = fit to send, 1 = refused, 64 = usage
 # Refuses when the branch:
 #   - does not contain upstream/main (his newer kit): refit it first
-#   - holds a merge, or any commit that is on miles but not its own (another extra or miles leaking in)
+#   - holds a merge, or any commit that is on prs but not its own (another extra or prs leaking in)
 #   - touches this tool's files (my-extras/, tests/my-extras.test.sh) or MY-EXTRAS.md / CLAUDE.local.md
-#   - mentions anything personal (private project names, folders, the start word Miles picked)
-# On success it prints the size line Miles says yes or no to, e.g. "Tabs: 3 files, +140 -2 lines", and the files.
+#   - mentions anything personal (private project names, folders, the start word PRS picked), through
+#     my-extras/push-check, the scanner that also guards every push
+# On success it prints the size line PRS says yes or no to, e.g. "Tabs: 3 files, +140 -2 lines", and the files.
 # Env: MY_EXTRAS_REPO (default this script's repo), MY_EXTRAS_UPSTREAM (default upstream/main),
 #      MY_EXTRAS_WORDS (default ~/.orchestration-kit/personal-words: the private names, kept out of the kit).
 set -uo pipefail
@@ -26,23 +27,20 @@ files="$(g diff --name-only "$UP...$br")"
 while IFS= read -r f; do
   case "$f" in my-extras/*|tests/my-extras.test.sh|MY-EXTRAS.md|CLAUDE.local.md) say "$br touches a private file: $f" ;; esac
 done <<<"$files"
-# Commits on this branch that miles got from somewhere else than this branch = something leaked in.
+# Commits on this branch that prs got from somewhere else than this branch = something leaked in.
 for other in $(g for-each-ref --format='%(refname:short)' 'refs/heads/extra/*'); do
   [ "$other" = "$br" ] && continue
   shared="$(g rev-list "$UP..$br" --not "$UP" | while read -r c; do g merge-base --is-ancestor "$c" "$other" && echo "$c"; done)"
   [ -z "$shared" ] || say "$br shares commits with $other: send one extra at a time"
 done
-# Personal content: never in a public pull request.
-# The words live outside the kit (it is public): one extended regex per line, # = comment.
-WORDS="${MY_EXTRAS_WORDS:-$HOME/.orchestration-kit/personal-words}"
-if [ -r "$WORDS" ]; then
-  PERSONAL="$(grep -v '^[[:space:]]*\(#\|$\)' "$WORDS" | paste -sd'|')"
-  hits="$([ -z "$PERSONAL" ] || g diff "$UP...$br" | grep '^+' | grep -inE "$PERSONAL" | head -5)"
-  [ -z "$hits" ] || say "personal names in the diff:
-$hits"
-else
-  say "no private word list at $WORDS (one pattern per line): cannot check for personal names"
-fi
+# Personal content: never in a public pull request. The same scanner guards every push (my-extras/push-check).
+hits="$("$(dirname "$(readlink -f "$0")")/push-check" diff "$UP" "$br")"; rc=$?
+case "$rc" in
+  0) ;;
+  1) say "personal names in the diff:
+$hits" ;;
+  *) say "$hits" ;;
+esac
 
 [ "$bad" -eq 0 ] || exit 1
 read -r add del <<<"$(g diff --numstat "$UP...$br" | awk '{a+=$1; d+=$2} END {print a+0, d+0}')"
