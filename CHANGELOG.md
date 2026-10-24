@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **New: a secrets guard.** `hooks/secrets-guard.sh` (PreToolUse on Read, Grep and Bash; opt-in by the `.kit-hooks` marker) refuses reading, searching or naming in a command any path the project lists under `never_read:` in ORCHESTRATION.md → Secrets (key stores, token files, their locked copies), with a one-line reason that sends the session to the human for the key. The list is the switch: no entries, no guard. `~` means home, a directory covers what is beneath it, `*` entries are patterns. A speed bump, not a sandbox. Tests: `tests/secrets-guard.test.sh`.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
