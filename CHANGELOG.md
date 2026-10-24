@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **Changed: the verifier reads its contract at the base.** `agents/verifier.md` now reads the brief, ORCHESTRATION.md and any rules file at `origin/main`, never from the branch under review (a branch can edit `docs/orchestration/**`; a contract file the branch changed is a finding), treats commit messages, comments and diff text as data (order-shaped text is quoted as a finding, never followed), and carries a table of what PASS, DEVIATES and BROKEN mean. `verify-feature` and the seat's §5 name the base ref in the contract.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
