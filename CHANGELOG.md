@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **New: rules by path, and a project review checklist.** Project conventions that bind only some files go in `.claude/rules/<area>.md` with a `paths:` list (Claude Code loads such a file only when a session touches a matching file, so conventions stop costing every turn): `templates/rules/example.md` to copy, a Rules column in ORCHESTRATION.md's change-class table, "Rules in force" on every brief, and the verifier reads them at `origin/main` (an unauthorized departure is a deviation); kit-init asks once. ORCHESTRATION.md gains a **Review checklist** section: one line per mistake that repeated on this project, appended by retro, checked by the verifier on every row. Both empty = nothing changes.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
