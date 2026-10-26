@@ -36,6 +36,9 @@ Newest first.
 - **Changed: a lighter seat skill.** `orchestrate`'s deploy, log and recycle/handover steps moved to `deploy-and-log.md` and `recycle-and-handover.md` beside its SKILL.md; the seat reads them only before a deploy, a log entry, a recycle or a handover. Every seat start loads about 850 tokens less; the pinned rules stay in SKILL.md.
 - **New: skill checks.** `tests/skills-lint.test.sh` (part of `tests/run.sh`) refuses a skill or agent whose frontmatter `name` is not its folder, whose `description` is missing or over 1024 characters, that cites a `${CLAUDE_PLUGIN_ROOT}/` path, a markdown link or a file "in this skill's folder" that does not exist, or that carries a personal home path; with `KIT_PRIVATE_WORDS=<file>` it also refuses any word on that list.
 - **New: `scripts/skill-usage.py <session log folder> [--days N]`** counts which kit skills a project's sessions actually ran (slash command or Skill tool) and lists the ones never run.
+- **Fixed: a builder's start no longer carries the board's history.** `orient-brief` (and `orient` step 2) served the banner up to the next `## ` and 60 lines; a board that keeps older seats' handover notes or old rows under the banner as `### ` subsections, with long rows, handed every builder that history (measured: ~21K characters of an injected ~28K) as if it were current. The cut now stops at the next heading of any depth and at 6000 characters, with a line saying it was cut.
+- **Changed: closed rows leave the board at every seat start.** The seat copies the board verbatim to the archive, then removes rows earlier seats closed and their banner and handover blocks; open, in-flight and blocked rows stay. The ~60 KB rule remains for boards that grow inside one seat.
+
 
 ## 0.9.0 — 2026-10-14
 
