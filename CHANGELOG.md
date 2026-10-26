@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **New: the git guard refuses a force-push.** With `git_guard: on`, `git push -f` / `--force` / `--force-with-lease` / `--mirror` and a `+branch` refspec are blocked: a force-push rewrites a branch other sessions may have pulled, reviewed or built on. Claude is told to push the rewritten work as a new branch (`git push origin HEAD:<branch>-r2`) or to merge `origin/main` so the push stays a fast-forward. A human can still force-push in their own terminal.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
