@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **Changed: the falsify skill has a "Before a result counts" checklist** of the mistakes that kept faking falsify results: a diff that only adds lines, a mutant that moved nothing the check reads, an empty selection, a prediction that names no failure line, a run outside the gate's mode, two fixes covering for each other, a green mutant with a second path, and hidden stderr. Step 5 now keeps the full log and counts reds from it instead of reading the last 40 lines, which could hide reds past the cut.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
