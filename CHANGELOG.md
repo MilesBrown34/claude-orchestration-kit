@@ -2,6 +2,11 @@
 
 Newest first.
 
+## Unreleased
+
+- **Fixed: a builder's start no longer carries the board's history.** `orient-brief` (and `orient` step 2) served the banner up to the next `## ` and 60 lines; a board that keeps older seats' handover notes or old rows under the banner as `### ` subsections, with long rows, handed every builder that history (measured: ~21K characters of an injected ~28K) as if it were current. The cut now stops at the next heading of any depth and at 6000 characters, with a line saying it was cut.
+- **Changed: closed rows leave the board at every seat start.** The seat copies the board verbatim to the archive, then removes rows earlier seats closed and their banner and handover blocks; open, in-flight and blocked rows stay. The ~60 KB rule remains for boards that grow inside one seat.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
