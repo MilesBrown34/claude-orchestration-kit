@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **Changed: the seat's subagents do not write code either.** The orchestrate skill said the seat writes board, briefs, reconciles, deploys and logs and never feature code; a seat read that as a rule about its own hands and sent a fix round to its own subagent in a worktree, then merged on its own check with no READ. §11 and §4 now say a seat subagent researches, reviews or moves text, and a build or a fix round, however small, goes to a builder sibling and gets a READ. The glossary's Seat entry says the same.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
