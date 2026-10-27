@@ -39,7 +39,7 @@ Newest first.
 - **Fixed: a builder's start no longer carries the board's history.** `orient-brief` (and `orient` step 2) served the banner up to the next `## ` and 60 lines; a board that keeps older seats' handover notes or old rows under the banner as `### ` subsections, with long rows, handed every builder that history (measured: ~21K characters of an injected ~28K) as if it were current. The cut now stops at the next heading of any depth and at 6000 characters, with a line saying it was cut.
 - **Changed: closed rows leave the board at every seat start.** The seat copies the board verbatim to the archive, then removes rows earlier seats closed and their banner and handover blocks; open, in-flight and blocked rows stay. The ~60 KB rule remains for boards that grow inside one seat.
 - **Added: a `builds on` line in the brief template.** With no board history at a builder's start, the seat names the earlier rows a row depends on and where to read them (their brief, their merge commit), or `none`.
-
+- **Fixed, status HUD: a hook error when the session's directory disappears.** The HUD ran its host commands (the heartbeat's `chmod`+`mv`, `ps`, the host sampler) from the session's current directory. A session that removes the worktree it stands in has no current directory until its next `cd`, and the heartbeat's spawn failed to start with `HooksError: $.process.run(sh) failed to start: ENOENT` in the chat. Every HUD spawn now runs from the home directory, and a heartbeat tick that cannot spawn is skipped (the next tick writes the file again).
 
 ## 0.9.0 — 2026-10-14
 
