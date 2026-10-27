@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **Fixed, status HUD: a hook error when the session's directory disappears.** The HUD ran its host commands (the heartbeat's `chmod`+`mv`, `ps`, the host sampler) from the session's current directory. A session that removes the worktree it stands in has no current directory until its next `cd`, and the heartbeat's spawn failed to start with `HooksError: $.process.run(sh) failed to start: ENOENT` in the chat. Every HUD spawn now runs from the home directory, and a heartbeat tick that cannot spawn is skipped (the next tick writes the file again).
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
