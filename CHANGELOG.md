@@ -2,6 +2,10 @@
 
 Newest first.
 
+## Unreleased
+
+- **Changed: a seat whose rows all wait on the human keeps working.** In non-blocking mode the "keep moving" rule only covered the time while sibling work was in flight, so when every row waited on the human the seat had nothing telling it to go on, and one sat idle for hours while checks, owed log entries and rows needing no ruling were left undone. §11 now says that is not idle time: before waiting, start the work that needs no answer.
+
 ## 0.9.0 — 2026-10-14
 
 Team mode is now the default; Solo is a practice mode.
