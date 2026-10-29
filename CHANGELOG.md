@@ -4,7 +4,7 @@ Newest first.
 
 ## Unreleased
 
-- **New, lessons 61–148 (`docs/LESSONS.md`, "Guards, gate logs and worktree git").** (PRS 2026-10-26)
+- **New, lessons 61–151 (`docs/LESSONS.md`, "Guards, gate logs and worktree git").** (PRS 2026-10-26)
 
 ## 0.9.0 — 2026-10-14
 
