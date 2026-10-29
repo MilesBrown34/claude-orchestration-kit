@@ -4,7 +4,7 @@ Newest first.
 
 ## Unreleased
 
-- **New, status HUD: CPU temperature.** With a reading, the CPU line shows the load and the CPU's temperature (`5.1 72°C`, the thread count stays in the HOST title); without one it keeps `5.1/16t`. `cpuTempCmd` (every `cpuTempSeconds`, default 15) reads Linux's own sensor (coretemp, k10temp) and, on WSL, which has none, LibreHardwareMonitor's readings on Windows (CPU Package, else Tctl/Tdie, else Core Max). A failed read keeps the last value for two spans. Tests: `plugins/status-hud/tests/host.test.ts`, `tests/layout.test.ts`.
+- **New, status HUD: CPU temperature.** (PRS 2026-10-19)
 
 ## 0.9.0 — 2026-10-14
 
