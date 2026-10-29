@@ -4,7 +4,7 @@ Newest first.
 
 ## Unreleased
 
-- **New: permission mode `bypass-available`.** `start-team.sh --mode bypass-available` (or `permission_mode: bypass-available` in the team block) starts every session with `--allow-dangerously-skip-permissions`: sessions start like `normal`, and Shift+Tab can then switch one into bypass mode (no permission checks) when you choose it. Recycles keep it. kit-init offers it as a fourth answer.
+- **New: permission mode `bypass-available`.** (PRS 2026-10-14)
 
 ## 0.9.0 — 2026-10-14
 
