@@ -4,7 +4,7 @@ Newest first.
 
 ## Unreleased
 
-- **New: `gate-throttle.sh --log <file>`.** Once the slot is held, the command's output goes to the file, which opens with `SHA <commit>` and `started <time> dirty=<changed paths>` read at that moment (a commit made while queued is the one logged, not the one you queued with) and ends with `exit <code>`. A gate log then names the code it tested by itself.
+- **New: `gate-throttle.sh --log <file>`.** (PRS 2026-10-15)
 
 ## 0.9.0 — 2026-10-14
 
