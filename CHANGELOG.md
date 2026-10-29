@@ -4,7 +4,7 @@ Newest first.
 
 ## Unreleased
 
-- **Lessons from real checks and guards (`docs/LESSONS.md`).** (PRS 2026-10-28)
+- **New, lessons 61–148 (`docs/LESSONS.md`, "Guards, gate logs and worktree git").** (PRS 2026-10-26)
 
 ## 0.9.0 — 2026-10-14
 
