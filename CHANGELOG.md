@@ -4,7 +4,7 @@ Newest first.
 
 ## Unreleased
 
-- **Fixed: a team start with no Claude running exited silently.** With `max_sessions:` set, `start-team.sh` (and `recycle-sibling.sh`) counted running sessions with `pgrep`, which exits 1 when it finds none; under the scripts' `set -euo pipefail` that ended the run right after the `terminal` line, with no tabs and no message. The count is now 0 in that case. Tests: `tests/session-cap.test.sh`.
+- **Fixed: a team start with no Claude running exited silently.** (PRS 2026-10-17)
 
 ## 0.9.0 — 2026-10-14
 
