@@ -4,7 +4,7 @@ Newest first.
 
 ## Unreleased
 
-- **New: memory-aware gate slots.** `gate-throttle.sh` admits a normal slot beyond the first only while the system's available memory (`MemAvailable`, the "available" column of `free -m`) is at least `GATE_MIN_FREE_MB` (default 3072); below that it runs one normal slot at a time and says so. An unreadable reading admits; `KIT_MEMINFO_FILE` stands in for `/proc/meminfo` in tests. The priority slot ignores it, as it ignores the load check.
+- **New: memory-aware gate slots.** (PRS 2026-10-16)
 
 ## 0.9.0 — 2026-10-14
 
